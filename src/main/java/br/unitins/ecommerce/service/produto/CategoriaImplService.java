@@ -31,9 +31,9 @@ public class CategoriaImplService implements CategoriaService {
     EstadoRepository estadoRepository;
 
     @Override
-    public List<CategoriaResponseDTO> getAll() {
+    public List<CategoriaResponseDTO> getAll(int page, int pageSize) {
         
-        return categoriaRepository.findAll()
+        return categoriaRepository.findAll().page(page, pageSize).list()
                                     .stream()
                                     .map(CategoriaResponseDTO::new)
                                     .toList();
@@ -108,9 +108,15 @@ public class CategoriaImplService implements CategoriaService {
     }
 
     @Override
-    public List<CategoriaResponseDTO> getByNome(String nome) throws NullPointerException {
+    public Long countByNome(String nome) {
+
+        return categoriaRepository.findByNome(nome).count();
+    }
+
+    @Override
+    public List<CategoriaResponseDTO> getByNome(String nome, int page, int pageSize) throws NullPointerException {
         
-        List<Categoria> list = categoriaRepository.findByNome(nome);
+        List<Categoria> list = categoriaRepository.findByNome(nome).page(page, pageSize).list();
 
         if (list == null)
             throw new NullPointerException("nenhum categoria encontrado");

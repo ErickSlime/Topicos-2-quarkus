@@ -13,6 +13,7 @@ import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.PATCH;
@@ -21,6 +22,7 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.ResponseBuilder;
@@ -39,7 +41,7 @@ import br.unitins.ecommerce.service.produto.ProdutoService;
 public class ProdutoResource {
 
     @Inject
-    ProdutoService racaoService;
+    ProdutoService produtoService;
 
     @Inject
     FileService fileService;
@@ -47,10 +49,13 @@ public class ProdutoResource {
     private static final Logger LOG = Logger.getLogger(ProdutoResource.class);
 
     @GET
-    public List<ProdutoResponseDTO> getAll() {
+    public List<ProdutoResponseDTO> getAll(
+        @QueryParam("page") @DefaultValue("0") int page,
+        @QueryParam("pageSize") @DefaultValue("2") int pageSize
+    ) {
         LOG.info("Buscando todas os produtos");
         LOG.debug("ERRO DE DEBUG.");
-        return racaoService.getAll();
+        return produtoService.getAll(page, pageSize);
     }
 
     @GET
@@ -58,7 +63,7 @@ public class ProdutoResource {
     public ProdutoResponseDTO getById(@PathParam("id") Long id) throws NotFoundException {
         LOG.infof("Buscando produtos por ID. ", id);
         LOG.debug("ERRO DE DEBUG.");
-        return racaoService.getById(id);
+        return produtoService.getById(id);
     }
 
     @GET
@@ -85,15 +90,15 @@ public class ProdutoResource {
 
     @POST
     // @RolesAllowed({"Admin"})
-    public Response insert(ProdutoDTO racaoDto) {
+    public Response insert(ProdutoDTO produtoDto) {
 
-        LOG.infof("Inserindo um produto: %s", racaoDto.nome());
+        LOG.infof("Inserindo um produto: %s", produtoDto.nome());
         Result result = null;
         try {
             LOG.infof("Produto inserido na lista Desejo.");
             return Response
                     .status(Status.CREATED) // 201
-                    .entity(racaoService.insert(racaoDto))
+                    .entity(produtoService.insert(produtoDto))
                     .build();
 
         } catch (ConstraintViolationException e) {
@@ -115,10 +120,10 @@ public class ProdutoResource {
     @PUT
     @Path("/{id}")
     // @RolesAllowed({"Admin"})
-    public Response update(@PathParam("id") Long id, ProdutoDTO racaoDto) {
+    public Response update(@PathParam("id") Long id, ProdutoDTO produtoDto) {
         Result result = null;
         try {
-            racaoService.update(id, racaoDto);
+            produtoService.update(id, produtoDto);
             LOG.infof("Produto (%d) atualizado com sucesso.", id);
             return Response
                     .status(Status.NO_CONTENT) // 204
@@ -160,7 +165,7 @@ public class ProdutoResource {
             return Response.status(Status.CONFLICT).entity(result).build();
         }
 
-        racaoService.update(id, nomeImagem);
+        produtoService.update(id, nomeImagem);
 
         return Response
                 .status(Status.NO_CONTENT)
@@ -173,7 +178,7 @@ public class ProdutoResource {
     public Response delete(@PathParam("id") Long id) throws IllegalArgumentException {
 
         try {
-            racaoService.delete(id);
+            produtoService.delete(id);
             LOG.infof("Produto excluído com sucesso.", id);
 
             return Response
@@ -192,17 +197,28 @@ public class ProdutoResource {
     public Long count() {
         LOG.info("Contando todos os produtos.");
         LOG.debug("ERRO DE DEBUG.");
-        return racaoService.count();
+        return produtoService.count();
     }
 
-    // @GET
-    // @Path("/searchByNome/{nome}")
-    // @PermitAll
-    // public List<ProdutoResponseDTO> getByNome(@PathParam("nome") String nome) {
-    //     LOG.infof("Buscando produto pelo nome. ", nome);
-    //     LOG.debug("ERRO DE DEBUG.");
-    //     return racaoService.getByNome(nome);
-    // }
+    @GET
+    @Path("/count/search/{nome}")
+    // @RolesAllowed({"Admin"})
+    public Long count (@PathParam("nome") String nome) {
+        LOG.infof("Contando todos os produtos");
+        LOG.debug("ERRO DE DEBUG.");
+        return produtoService.countByNome(nome);
+    }
+
+    @GET
+    @Path("/searchByNome/{nome}")
+    @PermitAll
+    public List<ProdutoResponseDTO> getByNome(@PathParam("nome") String nome,
+    @QueryParam("page") @DefaultValue("0") int page,
+        @QueryParam("pageSize") @DefaultValue("2") int pageSize) {
+        LOG.infof("Buscando produto pelo nome. ", nome);
+        LOG.debug("ERRO DE DEBUG.");
+        return produtoService.getByNome(nome, page, pageSize);
+    }
 
     // @GET
     // @Path("/searchByMarca/{marca}")
@@ -210,7 +226,7 @@ public class ProdutoResource {
     // public List<ProdutoResponseDTO> getByMarca(@PathParam("marca") String nomeMarca) {
     //     LOG.infof("Buscando pelo nome da marca. ", nomeMarca);
     //     LOG.debug("ERRO DE DEBUG.");
-    //     return racaoService.getByMarca(nomeMarca);
+    //     return produtoService.getByMarca(nomeMarca);
     // }
 
     // @GET
@@ -219,7 +235,7 @@ public class ProdutoResource {
     // public List<ProdutoResponseDTO> filterByPrecoMin(@PathParam("precoMin") Double preco) {
     //     LOG.infof("Filtrando pelo preço mínimo. ", preco);
     //     LOG.debug("ERRO DE DEBUG.");
-    //     return racaoService.filterByPrecoMin(preco);
+    //     return produtoService.filterByPrecoMin(preco);
     // }
 
     // @GET
@@ -228,7 +244,7 @@ public class ProdutoResource {
     // public List<ProdutoResponseDTO> filterByPrecoMax(@PathParam("precoMax") Double preco) {
     //     LOG.infof("Filtrando pelo preço máximo. ", preco);
     //     LOG.debug("ERRO DE DEBUG.");
-    //     return racaoService.filterByPrecoMax(preco);
+    //     return produtoService.filterByPrecoMax(preco);
     // }
 
     // @GET
@@ -238,7 +254,7 @@ public class ProdutoResource {
     //         @PathParam("precoMax") Double precoMax) {
     //     LOG.infof("Filtrando entre os preços mínimo e máximo. ", precoMin, " e ", precoMax);
     //     LOG.debug("ERRO DE DEBUG.");
-    //     return racaoService.filterByEntrePreco(precoMin, precoMax);
+    //     return produtoService.filterByEntrePreco(precoMin, precoMax);
     // }
 
 }

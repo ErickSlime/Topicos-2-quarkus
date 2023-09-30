@@ -10,6 +10,7 @@ import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.POST;
@@ -17,6 +18,7 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
@@ -38,10 +40,13 @@ public class EstadoResource {
 
     @GET
     // @PermitAll
-    public List<EstadoResponseDTO> getAll() {
+    public List<EstadoResponseDTO> getAll(
+        @QueryParam("page") @DefaultValue("0") int page,
+        @QueryParam("pageSize") @DefaultValue("2") int pageSize) 
+        {
         LOG.infof("Buscando todos os estados");
         LOG.debug("ERRO DE DEBUG.");
-        return estadoService.getAll();
+        return estadoService.getAll(page, pageSize);
     }
 
     @GET
@@ -139,12 +144,25 @@ public class EstadoResource {
     }
 
     @GET
+    @Path("/count/search/{nome}")
+    // @RolesAllowed({"Admin"})
+    public Long count (@PathParam("nome") String nome) {
+        LOG.infof("Contando todos os estados");
+        LOG.debug("ERRO DE DEBUG.");
+        return estadoService.countByNome(nome);
+    }
+
+    @GET
     @Path("/searchByNome/{nome}")
     // @PermitAll
-    public List<EstadoResponseDTO> getByNome(@PathParam("nome") String nome) throws NullPointerException {
+    public List<EstadoResponseDTO> getByNome(@PathParam("nome") String nome,
+        @QueryParam("page") @DefaultValue("0") int page,
+        @QueryParam("pageSize") @DefaultValue("2") int pageSize
+        ) throws NullPointerException 
+        {
         LOG.infof("Buscando estado pelo  nome. ", nome);
         LOG.debug("ERRO DE DEBUG.");
-        return estadoService.getByNome(nome);
+        return estadoService.getByNome(nome, page, pageSize);
     }
 
     @GET

@@ -31,9 +31,9 @@ public class MarcaImplService implements MarcaService {
     EstadoRepository estadoRepository;
 
     @Override
-    public List<MarcaResponseDTO> getAll() {
-        
-        return marcaRepository.findAll()
+    public List<MarcaResponseDTO> getAll(int page, int pageSize) {
+
+        return marcaRepository.findAll().page(page, pageSize).list()
                                     .stream()
                                     .map(MarcaResponseDTO::new)
                                     .toList();
@@ -108,9 +108,15 @@ public class MarcaImplService implements MarcaService {
     }
 
     @Override
-    public List<MarcaResponseDTO> getByNome(String nome) throws NullPointerException {
+    public Long countByNome(String nome) {
+
+        return marcaRepository.findByNome(nome).count();
+    }
+
+    @Override
+    public List<MarcaResponseDTO> getByNome(String nome, int page, int pageSize) throws NullPointerException {
         
-        List<Marca> list = marcaRepository.findByNome(nome);
+        List<Marca> list = marcaRepository.findByNome(nome).page(page, pageSize).list();
 
         if (list == null)
             throw new NullPointerException("nenhum marca encontrado");

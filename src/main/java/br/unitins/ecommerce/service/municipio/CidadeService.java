@@ -9,7 +9,7 @@ import br.unitins.ecommerce.dto.municipio.CidadeResponseDTO;
 public interface CidadeService {
 
         // recursos basicos
-        List<CidadeResponseDTO> getAll();
+        List<CidadeResponseDTO> getAll(int page, int pageSize);
 
         CidadeResponseDTO findById(Long id);
     
@@ -21,8 +21,10 @@ public interface CidadeService {
     
         // recursos extras
     
-        List<CidadeResponseDTO> findByNome(String nome);
+        List<CidadeResponseDTO> findByNome(String nome, int page, int pageSize);
     
         long count();
+
+        long countByNome(String nome);
     
 }

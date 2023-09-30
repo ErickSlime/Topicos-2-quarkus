@@ -9,7 +9,7 @@ public interface ProdutoService {
 
     // Metodos basicos
 
-    List<ProdutoResponseDTO> getAll();
+    List<ProdutoResponseDTO> getAll(int page, int pageSize);
 
     ProdutoResponseDTO getById(Long id);
 
@@ -25,7 +25,9 @@ public interface ProdutoService {
 
     Long count();
 
-    // List<ProdutoResponseDTO> getByNome(String nome);
+    Long countByNome(String nome);
+
+    List<ProdutoResponseDTO> getByNome(String nome, int page, int pageSize);
 
     // List<ProdutoResponseDTO> getByMarca(String nome);
 

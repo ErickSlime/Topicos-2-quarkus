@@ -55,8 +55,8 @@ public class ProdutoImplService implements ProdutoService {
     // }
 
      @Override
-    public List<ProdutoResponseDTO> getAll() {
-        List<Produto> list = produtoRepository.listAll();
+    public List<ProdutoResponseDTO> getAll(int page, int pageSize) {
+        List<Produto> list = produtoRepository.findAll().page(page, pageSize).list();
 
         return list.stream().map(e -> ProdutoResponseDTO.valueOf(e)).collect(Collectors.toList());
     }
@@ -162,18 +162,22 @@ public class ProdutoImplService implements ProdutoService {
         return produtoRepository.count();
     }
 
-    // @Override
-    // public List<ProdutoResponseDTO> getByNome(String nome) throws NullPointerException {
+    @Override
+    public Long countByNome(String nome) {
 
-    //     List<Produto> list = produtoRepository.findByNome(nome);
+        return produtoRepository.findByNome(nome).count();
+    }
 
-    //     if (list == null)
-    //         throw new NullPointerException("nenhum ração encontrado");
+    @Override
+    public List<ProdutoResponseDTO> getByNome(String nome, int page, int pageSize) throws NullPointerException {
 
-    //     return list.stream()
-    //             .map(ProdutoResponseDTO::new)
-    //             .collect(Collectors.toList());
-    // }
+        List<Produto> list = produtoRepository.findByNome(nome).page(page, pageSize).list();
+
+        if (list == null)
+            throw new NullPointerException("nenhum ração encontrado");
+
+        return list.stream().map(e -> ProdutoResponseDTO.valueOf(e)).collect(Collectors.toList());
+    }
 
     // @Override
     // public List<ProdutoResponseDTO> getByMarca(String nome) throws NullPointerException {

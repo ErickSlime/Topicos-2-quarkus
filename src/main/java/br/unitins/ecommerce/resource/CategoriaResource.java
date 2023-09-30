@@ -10,6 +10,7 @@ import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.POST;
@@ -17,6 +18,7 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
@@ -38,10 +40,12 @@ public class CategoriaResource {
 
     @GET
     @PermitAll
-    public List<CategoriaResponseDTO> getAll() {
+    public List<CategoriaResponseDTO> getAll(
+        @QueryParam("page") @DefaultValue("0") int page,
+        @QueryParam("pageSize") @DefaultValue("2") int pageSize) {
         LOG.info("Buscando todos os categoria.");
         LOG.debug("ERRO DE DEBUG.");
-        return categoriaService.getAll();
+        return categoriaService.getAll(page, pageSize);
     }
 
     @GET
@@ -139,11 +143,22 @@ public class CategoriaResource {
     }
 
     @GET
+    @Path("/count/search/{nome}")
+    // @RolesAllowed({"Admin"})
+    public Long count (@PathParam("nome") String nome) {
+        LOG.infof("Contando todos os categorias");
+        LOG.debug("ERRO DE DEBUG.");
+        return categoriaService.countByNome(nome);
+    }
+
+    @GET
     @Path("/searchByNome/{nome}")
     @PermitAll
-    public List<CategoriaResponseDTO> getByNome(@PathParam("nome") String nome) throws NullPointerException {
-        LOG.infof("Pesquisando Município po nome.", nome);
+    public List<CategoriaResponseDTO> getByNome(@PathParam("nome") String nome,
+    @QueryParam("page") @DefaultValue("0") int page,
+        @QueryParam("pageSize") @DefaultValue("2") int pageSize) throws NullPointerException {
+        LOG.infof("Pesquisando Categoria por nome.", nome);
         LOG.debug("ERRO DE DEBUG.");
-        return categoriaService.getByNome(nome);
+        return categoriaService.getByNome(nome, page, pageSize);
     }
 }

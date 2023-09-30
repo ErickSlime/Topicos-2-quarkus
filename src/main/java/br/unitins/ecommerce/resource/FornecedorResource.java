@@ -10,6 +10,7 @@ import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.POST;
@@ -17,6 +18,7 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
@@ -38,10 +40,13 @@ public class FornecedorResource {
 
     @GET
     @PermitAll
-    public List<FornecedorResponseDTO> getAll() {
+    public List<FornecedorResponseDTO> getAll(
+        @QueryParam("page") @DefaultValue("0") int page,
+        @QueryParam("pageSize") @DefaultValue("2") int pageSize
+    ) {
         LOG.info("Buscando todos os fornecedor.");
         LOG.debug("ERRO DE DEBUG.");
-        return fornecedorService.getAll();
+        return fornecedorService.getAll(page , pageSize);
     }
 
     @GET
@@ -139,11 +144,22 @@ public class FornecedorResource {
     }
 
     @GET
+    @Path("/count/search/{nome}")
+    // @RolesAllowed({"Admin"})
+    public Long count (@PathParam("nome") String nome) {
+        LOG.infof("Contando todos os fornecedores");
+        LOG.debug("ERRO DE DEBUG.");
+        return fornecedorService.countByNome(nome);
+    }
+
+    @GET
     @Path("/searchByNome/{nome}")
     @PermitAll
-    public List<FornecedorResponseDTO> getByNome(@PathParam("nome") String nome) throws NullPointerException {
+    public List<FornecedorResponseDTO> getByNome(@PathParam("nome") String nome,
+    @QueryParam("page") @DefaultValue("0") int page,
+        @QueryParam("pageSize") @DefaultValue("2") int pageSize) throws NullPointerException {
         LOG.infof("Pesquisando Município po nome.", nome);
         LOG.debug("ERRO DE DEBUG.");
-        return fornecedorService.getByNome(nome);
+        return fornecedorService.getByNome(nome, page , pageSize);
     }
 }

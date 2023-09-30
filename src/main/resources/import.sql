@@ -12,13 +12,14 @@ INSERT INTO marca (nome, cnpj) VALUES ('GranPlus', '38.850.092/0001-71');
 INSERT INTO fornecedor (nome) VALUES ('Bontrato');
 
 INSERT INTO categoria (nome, descricao) VALUES ('Racao', 'Rações para todos os tipos de Pets');
+INSERT INTO categoria (nome, descricao) VALUES ('Sla', 'Sla');
 
 INSERT INTO produto (nome, descricao, preco, estoque, id_marca, id_fornecedor, id_categoria) VALUES ('Ração Pedigree Nutrição Essencial', 'Para Cães Adultos', 140.00, 30, 1,1,1);
 
-INSERT INTO produto (nome, descricao, preco, estoque, id_marca, id_fornecedor, id_categoria) VALUES ('Ração Golden Fórmula Mini Bits', 'Para Cães Adultos de Porte Pequeno', 110.00, 10, 2,1,1);
+INSERT INTO produto (nome, descricao, preco, estoque, id_marca, id_fornecedor, id_categoria) VALUES ('Ração Golden Fórmula Mini Bits', 'Para Cães Adultos de Porte Pequeno', 110.00, 10, 2,1,2);
 
 INSERT INTO produto (nome, descricao, preco, estoque, id_marca, id_fornecedor, id_categoria) VALUES ('Ração Whiskas', 'Para Gatos Adultos', 180.00, 15, 3,1,1);
-INSERT INTO produto (nome, descricao, preco, estoque, id_marca, id_fornecedor, id_categoria) VALUES ('Ração GranPlus Choice', 'Para Gatos Filhotes', 150.00, 12, 4,1,1);
+INSERT INTO produto (nome, descricao, preco, estoque, id_marca, id_fornecedor, id_categoria) VALUES ('Ração GranPlus Choice', 'Para Gatos Filhotes', 150.00, 12, 4,1,2);
 
 INSERT INTO estado (nome, sigla) VALUES ('Acre', 'AC');
 INSERT INTO estado (nome, sigla) VALUES ('Amazonas', 'AM');
